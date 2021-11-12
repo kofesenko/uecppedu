@@ -15,11 +15,11 @@ public:
 	// Sets default values for this character's properties
 	AAICharC();
 
-	UPROPERTY(BlueprintReadWrite)
-	int Health;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health;
 
 	UPROPERTY(BlueprintReadOnly)
-	int Speed;
+	float Speed;
 
 protected:
 	// Called when the game starts or when spawned

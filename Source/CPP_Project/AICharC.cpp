@@ -6,7 +6,12 @@
 // Sets default values
 AAICharC::AAICharC()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	Health = 100.f;
+	
+
+
+
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 }

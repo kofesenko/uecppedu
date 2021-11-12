@@ -11,14 +11,22 @@ class CPP_PROJECT_API AMainCharC : public ACharacter
 {
 	GENERATED_BODY()
 
+	/*Invetory*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class UInvetoryComponent* Inventory;
+	
 public:
+	
 	// Sets default values for this character's properties
 	AMainCharC();
-	UPROPERTY(BlueprintReadWrite)
-	int Healt;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health;
 
 	UPROPERTY(BlueprintReadWrite)
-	int Stamina;
+	float Stamina;
+
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem (class UItemsC* ItemsC);
 
 protected:
 	// Called when the game starts or when spawned
