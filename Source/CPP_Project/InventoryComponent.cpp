@@ -27,7 +27,7 @@ bool UInventoryComponent::AddItem(class UItem* Item)
 		return false;
 	}
 	
-	Item->OwningInventory = this;
+	Item->OwningInventory = this; 
 	Item->World = GetWorld();
 	Items.Add(Item);
 	

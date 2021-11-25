@@ -18,7 +18,7 @@ public:
 	UInventoryComponent();
 
 	virtual void BeginPlay() override;
-
+	
 	bool AddItem(class UItem* Item);
 	bool RemoveItem(class UItem* Item);
 
