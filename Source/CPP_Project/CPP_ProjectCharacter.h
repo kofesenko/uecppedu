@@ -18,8 +18,24 @@ class ACPP_ProjectCharacter : public ACharacter
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
+
+	/*###Inventory*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+	class UInventoryComponent* Inventory;
 public:
 	ACPP_ProjectCharacter();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
+	float Health;
+
+	UPROPERTY(BlueprintReadWrite)
+	float Stamina;
+
+	UFUNCTION(BlueprintCallable, Category = "Items")
+	void UseItem (class UItem* Item);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool CheckIsAndroid();
 
 	/** Base turn rate, in deg/sec. Other scaling may affect final turn rate. */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category=Camera)
