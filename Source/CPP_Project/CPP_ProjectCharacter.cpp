@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "CPP_ProjectCharacter.h"
-#include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -11,8 +10,15 @@
 #include "Item.h"
 #include "InventoryComponent.h"
 
-//////////////////////////////////////////////////////////////////////////
+
+
+
 // ACPP_ProjectCharacter
+void ACPP_ProjectCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
 
 ACPP_ProjectCharacter::ACPP_ProjectCharacter()
 {
@@ -47,13 +53,11 @@ ACPP_ProjectCharacter::ACPP_ProjectCharacter()
 
 	Health = 100.f;
 	
-	Inventory = CreateDefaultSubobject<UInventoryComponent>("Inventory");
-	Inventory->Capacity = 20;
-
-
-	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
-	// are set in the derived blueprint asset named MyCharacter (to avoid direct content references in C++)
+	Inventory = CreateDefaultSubobject<UInventoryComponent>("Inventory"); //Inventory
+	Inventory->Capacity = 20; 
+	
 }
+
 
 void ACPP_ProjectCharacter::UseItem(UItem* Item)
 {
@@ -72,7 +76,6 @@ bool ACPP_ProjectCharacter::CheckIsAndroid()
 	return false;
 }
 
-//////////////////////////////////////////////////////////////////////////
 // Input
 
 void ACPP_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
@@ -82,12 +85,11 @@ void ACPP_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ACPP_ProjectCharacter::Interact); //Interact by line trace
+
 	PlayerInputComponent->BindAxis("MoveForward", this, &ACPP_ProjectCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ACPP_ProjectCharacter::MoveRight);
-
-	// We have 2 versions of the rotation bindings to handle different kinds of devices differently
-	// "turn" handles devices that provide an absolute delta, such as a mouse.
-	// "turnrate" is for devices that we choose to treat as a rate of change, such as an analog joystick
+	
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("TurnRate", this, &ACPP_ProjectCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
@@ -96,21 +98,7 @@ void ACPP_ProjectCharacter::SetupPlayerInputComponent(class UInputComponent* Pla
 	// handle touch devices
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &ACPP_ProjectCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &ACPP_ProjectCharacter::TouchStopped);
-
-	// VR headset functionality
-	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &ACPP_ProjectCharacter::OnResetVR);
-}
-
-
-void ACPP_ProjectCharacter::OnResetVR()
-{
-	// If CPP_Project is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in CPP_Project.Build.cs is not automatically propagated
-	// and a linker error will result.
-	// You will need to either:
-	//		Add "HeadMountedDisplay" to [YourProject].Build.cs PublicDependencyModuleNames in order to build successfully (appropriate if supporting VR).
-	// or:
-	//		Comment or delete the call to ResetOrientationAndPosition below (appropriate if not supporting VR)
-	UHeadMountedDisplayFunctionLibrary::ResetOrientationAndPosition();
+	
 }
 
 void ACPP_ProjectCharacter::TouchStarted(ETouchIndex::Type FingerIndex, FVector Location)
@@ -134,6 +122,24 @@ void ACPP_ProjectCharacter::LookUpAtRate(float Rate)
 	// calculate delta for this frame from the rate information
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
+
+void ACPP_ProjectCharacter::Interact()
+{
+	FVector Start = FollowCamera->GetComponentLocation();
+	FVector End = Start + FollowCamera->GetForwardVector() * 500.0f;
+
+	FHitResult HitResult;
+	FCollisionQueryParams Params;
+	Params.AddIgnoredActor(this);
+	if(GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, Params))
+	{
+		if(AActor* Actor = HitResult.GetActor())
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Object to Interact: %s"), *Actor->GetName());
+		}
+	}
+}
+
 
 void ACPP_ProjectCharacter::MoveForward(float Value)
 {
